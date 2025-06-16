@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { IonButton, IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
 import './Home.css';
 import Flashcard from '../components/Flashcard';
 
@@ -20,19 +19,22 @@ const Home: React.FC = () => {
         const res = await fetch("http://localhost:3001/api/generate-qa", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
         });
         
         const data = await res.json();
+        console.log(data)
         console.log(data.output)
-        setPregunta(data.output.split(",")[0])
-        setRespuesta(data.output.split(",")[1]);
+        console.log(data.output.pregunta)
+        console.log(data.output.respuesta)
+        setPregunta(data.output.pregunta)
+        setRespuesta(data.output.respuesta)
       } catch (error) {
         console.error("Error al obtener la respuesta:", error);
         setRespuesta("Error al generar la pregunta y respuesta.");
       }
       setLoading(false);
     }
-    
   };
 
   return (
@@ -48,7 +50,11 @@ const Home: React.FC = () => {
             <IonTitle size="large">Blank</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <Flashcard frontText={pregunta} backText={respuesta} />
+        
+        <div className="ion-padding ion-text-center">
+          <Flashcard frontText={pregunta} backText={respuesta} />
+        </div>
+        
         <div className="ion-padding ion-text-center">
           <IonButton onClick={generarQA} className="ion-text-center">
             Presione para generar
