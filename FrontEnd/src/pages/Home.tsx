@@ -17,6 +17,7 @@ import { caretBackOutline, caretForwardOutline } from 'ionicons/icons';
 import './Home.css';
 import Flashcard from '../components/Flashcard';
 import { FlashcardInterface } from '../utils/FlashcardInterface';
+import { exportarJSON, exportarPDF } from '../utils/exports';
 
 const Home: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -27,31 +28,32 @@ const Home: React.FC = () => {
    * Genera un lote de flashcards llamando a la API de Ollama múltiples veces.
    */
   const generarLoteQA = async (numberOfFlashcards: number) => {
-    if (loading) {
-      return;
-    }
+    if (loading) return;
 
     setLoading(true);
     setFlashcardsBatch([]);
-    setCurrentIndex(0)
-
-    const newFlashcards: FlashcardInterface[] = [];
+    setCurrentIndex(0);
 
     try {
-      for (let i = 0; i < numberOfFlashcards; i++) {
-        const res = await fetch("http://localhost:3001/api/generate-qa", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({}),
-        });
-        const data = await res.json();
-        if (data.output && data.output.pregunta && data.output.respuesta) {
-          newFlashcards.push({ pregunta: data.output.pregunta, respuesta: data.output.respuesta });
-        } else {
-          console.warn("Respuesta inválida de la API para flashcard", i, data);
-        }
+      const res = await fetch("http://localhost:3001/api/flashcards", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ count: numberOfFlashcards }),
+      });
+
+      if (!res.ok) {
+          throw new Error(`El servidor respondió con el estado ${res.status}`);
       }
-      setFlashcardsBatch(newFlashcards);
+      
+      const data = await res.json();
+      
+      if (data.flashcards && Array.isArray(data.flashcards)) {
+        setFlashcardsBatch(data.flashcards);
+      } else {
+        console.warn("La respuesta de la API no contiene un lote de flashcards válido.", data);
+        setFlashcardsBatch([]);
+      }
+
     } catch (error) {
       console.error("Error al generar el lote de flashcards:", error);
     } finally {
@@ -59,13 +61,7 @@ const Home: React.FC = () => {
     }
   };
 
-  function exportarPDF(): void {
-    throw new Error('Function not implemented.');
-  }
 
-  function exportarJSON(): void {
-    throw new Error('Function not implemented.');
-  }
 
   return (
     <IonPage>
@@ -146,14 +142,14 @@ const Home: React.FC = () => {
             </IonRow>
             <IonRow>
               <IonCol size="12">
-                <IonButton expand="block" onClick={exportarPDF} disabled={loading}>
+                <IonButton expand="block" onClick={()=>exportarPDF(flashcardsBatch)} disabled={loading}>
                   {loading ? 'Generando...' : 'Exportar a PDF'}
                 </IonButton>
               </IonCol>
             </IonRow>
             <IonRow>
               <IonCol size="12">
-                <IonButton expand="block" onClick={exportarJSON} disabled={loading}>
+                <IonButton expand="block" onClick={()=>{exportarJSON(flashcardsBatch)}} disabled={loading}>
                   {loading ? 'Generando...' : 'Exportar a JSON'}
                 </IonButton>
               </IonCol>

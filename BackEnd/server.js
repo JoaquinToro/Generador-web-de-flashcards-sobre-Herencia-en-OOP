@@ -1,12 +1,13 @@
-const express=require("express");
-const bodyParser=require("body-parser");
-const cors=require("cors");
-const app=express();
-const port=3001;
+const express = require("express");
+const cors = require("cors");
 
+const app = express();
+app.use(express.json());
 app.use(cors());
-app.use(bodyParser.json());
 
+const PORT = process.env.PORT || 3001;
+const OLLAMA_API_URL = process.env.OLLAMA_API_URL || "http://localhost:11434/api/generate";
+const MODEL_NAME = "FlashcardsJavaHerenciaGPT";
 const TEMAS = [
     // --- 1. Conceptos Fundamentales y Teoría ---
     "qué es la herencia (relación 'es-un')",
@@ -83,76 +84,126 @@ const TEMAS = [
 ];
 const DIFICULTADES = ["básico", "intermedio", "avanzado"];
 
-app.post("/api/generate-qa", async (req, res) => {
-  console.log("Click! Ahora se va a generar la cosa (espero)");
-
-  try {
-    let { subtema, dificultad } = req.query;
-
-    // Si no se proporcionan, los elegimos al azar.
-    if (!subtema) {
-        subtema = TEMAS[Math.floor(Math.random() * TEMAS.length)];
+function shuffleArray(array) {
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
     }
-    if (!dificultad) {
-        dificultad = DIFICULTADES[Math.floor(Math.random() * DIFICULTADES.length)];
-    }
-    const promptA = `
-                    System: Eres un experto en Java y un generador de flashcards para estudiantes de programación. Tu única función es crear una flashcard en formato JSON. Responde únicamente con el objeto JSON y nada más.
+    return array;
+}
 
-                    User: Genera una flashcard sobre herencia en Java. El concepto específico es: "${subtema}". La flashcard debe ser de dificultad "${dificultad}". El formato JSON debe contener estrictamente las claves "pregunta" y "respuesta".
 
-                    Ejemplo de salida deseada:
-                    {
-                      "pregunta": "¿Un ejemplo de pregunta sobre ${subtema}?",
-                      "respuesta": "Un ejemplo de respuesta detallada y precisa.",
-                      "tema": "Tema de la pregunta",
-                      "dificultad": "Dificultad de la pregunta"
-                    }
+async function generarFlashcardUnica(tema, dificultad, historialPreguntas) {
+    const historialString = historialPreguntas.size > 0
+        ? `Por favor, asegúrate de que la pregunta no sea similar a ninguna de las siguientes: ${[...historialPreguntas].join(', ')}`
+        : "";
 
-                    Tu turno:
-                    `;
-    const response = await fetch("http://localhost:11434/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "FlashcardsJavaHerenciaGPT",
-        prompt: promptA,
-        options: {
-                    temperature: 0.1,
-                    top_p: 0.9,
-                    repetition_penalty: 1.15
-                },
-        stream: false,
-      }),
+    const prompt = `System: Eres un mentor de programación ingenioso y un experto en Java. Tu misión es crear flashcards que no solo sean correctas, sino también memorables y fáciles de entender. Utiliza analogías, ejemplos del mundo real y un toque de humor cuando sea apropiado. Tu única función es responder con un objeto JSON y nada más.
+
+                    User: Genera una flashcard sobre herencia en Java que sea especialmente clara y creativa.
+                    - Concepto específico: "${tema}"
+                    - Dificultad: "${dificultad}"
+                    - Enfócate en una analogía o un caso de uso práctico para explicar el concepto.
+                    - El formato JSON debe contener estrictamente las claves "pregunta", "respuesta", "tema" y "dificultad".
+                    ${historialString}
+
+                    Tu turno:`;
+
+    const response = await fetch(OLLAMA_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            model: MODEL_NAME,
+            prompt: prompt,
+            stream: false,
+            options: {
+                temperature: 0.7,
+                top_p: 0.9,
+                repetition_penalty: 1.2
+            }
+        }),
     });
-
+     if (!response.ok) throw new Error(`API Error: ${response.status}`);
     const data = await response.json();
-    console.log("Respuesta completa de JavaHerenciaGPT: ", data);
-
-    if (data.response) {
-      let flashcard = null;
-
-      try {
-        // Intentar convertir a JSON
-        flashcard = JSON.parse(data.response.trim());
-      } catch (jsonError) {
-        console.error("Error al parsear el JSON:", jsonError);
-        return res.status(500).json({ error: "El modelo no devolvió un JSON válido." });
-      }
-
-      // Si el parseo fue exitoso, devolver el objeto JSON
-      res.json({ output: flashcard });
-      console.log("Respuesta formateada de JavaHerenciaGPT:", flashcard);
-    } else {
-      res.status(500).json({ error: "No se encontró la respuesta esperada en la API." });
+    if (!data.response) throw new Error("API response missing 'response' field.");
+    const jsonString = data.response.match(/\{[\s\S]*\}/m);
+    if (!jsonString) throw new Error("No JSON object found in response.");
+    const flashcard = JSON.parse(jsonString[0]);
+    if (typeof flashcard.pregunta !== 'string' || typeof flashcard.respuesta !== 'string') {
+        throw new Error("Invalid flashcard structure.");
     }
-  } catch (error) {
-    console.error("Error al conectar con Ollama:", error);
-    res.status(500).json({ error: "Error al generar con Ollama" });
-  }
+    return flashcard;
+}
+
+app.post("/api/flashcards", async (req, res) => {
+    const count = parseInt(req.body.count, 10) || 1;
+    console.log(`[Request] Petición para generar un lote de ${count} flashcard(s).`);
+
+    const nuevasFlashcards = [];
+    const preguntasDelLoteActual = new Set();
+    const MAX_INTENTOS_TOTALES = count * 3;
+    let intentosTotales = 0;
+
+    let temasBarajados = shuffleArray([...TEMAS]);
+    let listaDeTareas = [];
+    for (let i = 0; i < count; i++) {
+        listaDeTareas.push({
+            tema: temasBarajados[i % temasBarajados.length],
+            dificultad: DIFICULTADES[Math.floor(Math.random() * DIFICULTADES.length)]
+        });
+    }
+
+    try {
+        for (const tarea of listaDeTareas) {
+            if (intentosTotales >= MAX_INTENTOS_TOTALES) {
+                console.warn("[Warning] Se alcanzó el máximo de intentos totales. Devolviendo lote parcial.");
+                break;
+            }
+            intentosTotales++;
+            
+            let exitoEnTarea = false;
+            let reintentosPorTarea = 0;
+            const MAX_REINTENTOS_POR_TAREA = 3;
+
+            while (!exitoEnTarea && reintentosPorTarea < MAX_REINTENTOS_POR_TAREA) {
+                 if (intentosTotales >= MAX_INTENTOS_TOTALES) break;
+                 
+                 try {
+                     const flashcard = await generarFlashcardUnica(tarea.tema, tarea.dificultad, preguntasDelLoteActual);
+
+                     if (!preguntasDelLoteActual.has(flashcard.pregunta)) {
+                         preguntasDelLoteActual.add(flashcard.pregunta);
+                         nuevasFlashcards.push(flashcard);
+                         console.log(`[Batch] Flashcard #${nuevasFlashcards.length} (${tarea.tema}) generada y añadida.`);
+                         exitoEnTarea = true; 
+                     } else {
+                         console.log(`[Batch] Pregunta repetida para el tema "${tarea.tema}", reintentando...`);
+                         reintentosPorTarea++;
+                         intentosTotales++;
+                     }
+                 } catch (generationError) {
+                     console.warn(`[Batch] Error en un intento de generación: ${generationError.message}`);
+                     reintentosPorTarea++;
+                     intentosTotales++;
+                 }
+            }
+        }
+
+        if (nuevasFlashcards.length < count) {
+            console.warn(`[Warning] Lote finalizado. Solo se generaron ${nuevasFlashcards.length} de ${count} flashcards únicas.`);
+        }
+
+        res.json({ flashcards: nuevasFlashcards });
+
+    } catch (error) {
+        console.error("[API Error] Error crítico al generar el lote:", error);
+        res.status(500).json({ error: "No se pudo completar la generación del lote de flashcards." });
+    }
 });
 
-  
-  app.listen(port, () => {
-    console.log(`Servidor backend escuchando en http://localhost:${port}...`);
-  });
+
+app.listen(PORT, () => {
+    console.log(`Servidor backend escuchando en http://localhost:${PORT}`);
+});
