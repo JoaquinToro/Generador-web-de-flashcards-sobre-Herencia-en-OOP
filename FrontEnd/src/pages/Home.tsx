@@ -11,23 +11,30 @@ import {
   IonIcon,
   IonCol,
   IonGrid,
-  IonRow
+  IonRow,
+  IonButtons
 } from '@ionic/react';
-import { caretBackOutline, caretForwardOutline } from 'ionicons/icons';
+import { caretBackOutline, caretForwardOutline, settingsOutline } from 'ionicons/icons';
 import './Home.css';
 import Flashcard from '../components/Flashcard';
+import SettingsModal from '../components/SettingsModal';
 import { FlashcardInterface } from '../utils/FlashcardInterface';
 import { exportarJSON, exportarPDF } from '../utils/exports';
 
 const Home: React.FC = () => {
   const [loading, setLoading] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [rol, setRol] = useState('un mentor de programación ingenioso');
+  const [tema, setTema] = useState('');
+  const [ejemplo, setEjemplo] = useState('');
+  const [cantidadLote, setCantidadLote] = useState(5);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flashcardsBatch, setFlashcardsBatch] = useState<FlashcardInterface[]>([]);
 
   /**
    * Genera un lote de flashcards llamando a la API de Ollama múltiples veces.
    */
-  const generarLoteQA = async (numberOfFlashcards: number) => {
+  const generarLoteQA = async (numberOfFlashcards: number, rol:string, tema:string, ejemplo:string) => {
     if (loading) return;
 
     setLoading(true);
@@ -38,7 +45,12 @@ const Home: React.FC = () => {
       const res = await fetch("http://localhost:3001/api/flashcards", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ count: numberOfFlashcards }),
+        body: JSON.stringify({ 
+          count: numberOfFlashcards,
+          rol: rol,
+          tipo: tema,
+          ejemplo: ejemplo
+        }),
       });
 
       if (!res.ok) {
@@ -62,15 +74,30 @@ const Home: React.FC = () => {
   };
 
 
-
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Generador de flashcards para herencia en OOP</IonTitle>
+          <IonTitle>Generador de Flashcards de Herencia</IonTitle>
+          <IonButtons slot="end">
+            <IonButton onClick={() => setShowSettingsModal(true)}>
+              <IonIcon slot="icon-only" icon={settingsOutline} />
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
+        <SettingsModal
+          isOpen={showSettingsModal}
+          onDidDismiss={() => setShowSettingsModal(false)}
+          rol={rol}
+          setRol={setRol}
+          tema={tema}
+          setTema={setTema}
+          cantidadLote={cantidadLote}
+          setCantidadLote={setCantidadLote}
+          setEjemplo={setEjemplo}
+        />
         <div className="main-container flashcard-stack">
           {loading && (
             <div className="loading-container">
@@ -128,14 +155,14 @@ const Home: React.FC = () => {
         <IonGrid className="ion-padding ion-text-center menu-botones">
             <IonRow>
               <IonCol size="12">
-                <IonButton expand="block" onClick={() => generarLoteQA(1)} disabled={loading}>
+                <IonButton expand="block" onClick={() => generarLoteQA(1,rol,tema,ejemplo)} disabled={loading}>
                   {loading ? 'Generando...' : 'Generar Flashcard'}
                 </IonButton>
               </IonCol>
             </IonRow>
             <IonRow>
               <IonCol size="12">
-                <IonButton expand="block" onClick={() => generarLoteQA(5)} disabled={loading}>
+                <IonButton expand="block" onClick={() => generarLoteQA(cantidadLote,rol,tema,ejemplo)} disabled={loading}>
                   {loading ? 'Generando...' : 'Generar Lote de Flashcards'}
                 </IonButton>
               </IonCol>

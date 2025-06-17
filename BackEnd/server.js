@@ -95,21 +95,22 @@ function shuffleArray(array) {
 }
 
 
-async function generarFlashcardUnica(tema, dificultad, historialPreguntas) {
+async function generarFlashcardUnica(rol, tipo, ejemplo, tarea, dificultad, historialPreguntas) {
     const historialString = historialPreguntas.size > 0
         ? `Por favor, asegúrate de que la pregunta no sea similar a ninguna de las siguientes: ${[...historialPreguntas].join(', ')}`
         : "";
 
-    const prompt = `System: Eres un mentor de programación ingenioso y un experto en Java. Tu misión es crear flashcards que no solo sean correctas, sino también memorables y fáciles de entender. Utiliza analogías, ejemplos del mundo real y un toque de humor cuando sea apropiado. Tu única función es responder con un objeto JSON y nada más.
+    const prompt = `${rol} ${tipo} Tu única salida debe ser un objeto JSON válido y nada más.\nSigue el siguiente ejemplo para generar la flashcard\n${ejemplo}
 
-                    User: Genera una flashcard sobre herencia en Java que sea especialmente clara y creativa.
-                    - Concepto específico: "${tema}"
+                    User: Genera una flashcard de acuerdo a tu rol sobre herencia en Java.
+                    - Concepto específico: "${tarea}"
                     - Dificultad: "${dificultad}"
-                    - Enfócate en una analogía o un caso de uso práctico para explicar el concepto.
                     - El formato JSON debe contener estrictamente las claves "pregunta", "respuesta", "tema" y "dificultad".
                     ${historialString}
 
                     Tu turno:`;
+
+    console.log(prompt)
 
     const response = await fetch(OLLAMA_API_URL, {
         method: "POST",
@@ -119,13 +120,13 @@ async function generarFlashcardUnica(tema, dificultad, historialPreguntas) {
             prompt: prompt,
             stream: false,
             options: {
-                temperature: 0.7,
+                temperature: 0.9,
                 top_p: 0.9,
                 repetition_penalty: 1.2
             }
         }),
     });
-     if (!response.ok) throw new Error(`API Error: ${response.status}`);
+    if (!response.ok) throw new Error(`API Error: ${response.status}`);
     const data = await response.json();
     if (!data.response) throw new Error("API response missing 'response' field.");
     const jsonString = data.response.match(/\{[\s\S]*\}/m);
@@ -134,11 +135,15 @@ async function generarFlashcardUnica(tema, dificultad, historialPreguntas) {
     if (typeof flashcard.pregunta !== 'string' || typeof flashcard.respuesta !== 'string') {
         throw new Error("Invalid flashcard structure.");
     }
+    console.log(flashcard)
     return flashcard;
 }
 
 app.post("/api/flashcards", async (req, res) => {
     const count = parseInt(req.body.count, 10) || 1;
+    const rol = req.body.rol || 'System: Eres un mentor de programación ingenioso y un experto en Java. Tu misión es crear flashcards que no solo sean correctas, sino también memorables usando analogías y ejemplos prácticos.'
+    const tipo = req.body.tipo || 'Mantén un balance entre conceptos teóricos y ejercicios prácticos de programación'
+    const ejemplo = req.body.ejemplo || ''
     console.log(`[Request] Petición para generar un lote de ${count} flashcard(s).`);
 
     const nuevasFlashcards = [];
@@ -171,7 +176,7 @@ app.post("/api/flashcards", async (req, res) => {
                  if (intentosTotales >= MAX_INTENTOS_TOTALES) break;
                  
                  try {
-                     const flashcard = await generarFlashcardUnica(tarea.tema, tarea.dificultad, preguntasDelLoteActual);
+                     const flashcard = await generarFlashcardUnica(rol, tipo, ejemplo,tarea.tema, tarea.dificultad, preguntasDelLoteActual);
 
                      if (!preguntasDelLoteActual.has(flashcard.pregunta)) {
                          preguntasDelLoteActual.add(flashcard.pregunta);

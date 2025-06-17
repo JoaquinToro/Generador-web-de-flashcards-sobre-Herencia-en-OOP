@@ -1,0 +1,49 @@
+/* ---- Estilos para la Lista y los Items ---- */
+.settings-modal-content ion-list {
+  background: transparent;
+  padding-top: 16px;
+}
+
+.settings-modal-content ion-item {
+  --border-radius: 12px;
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ---- Estilos para las Etiquetas (Labels) ---- */
+.settings-modal-content ion-label[position="stacked"] {
+  font-weight: 600;
+  color: var(--ion-color-medium-shade);
+  margin-bottom: 8px;
+  font-size: 0.9em;
+}
+
+/* ---- Estilos para los Campos de Entrada (Inputs y Selects) ---- */
+.settings-modal-content ion-input,
+.settings-modal-content ion-select {
+  font-size: 1.1em;
+  color: var(--ion-color-dark-shade);
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+}
+
+/* ---- Estilos para el Header del Modal ---- */
+.settings-modal-content ion-header ion-toolbar {
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-primary-contrast);
+}
+
+.settings-modal-content ion-header ion-title {
+  font-weight: bold;
+}
+
+.settings-modal-content ion-header ion-button {
+    --color: var(--ion-color-primary-contrast);
+}
+
+.settings-modal-content ion-item.item-has-focus {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: -2px;
+}
