@@ -1,0 +1,127 @@
+/* Contenedor principal con padding y centrado */
+.main-container {
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Spinner de carga */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  gap: 0.5rem;
+}
+
+/* Stack de flashcards */
+.flashcard-stack {
+  position: relative;
+  min-height: 300px;
+  margin-bottom: 1rem;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 1rem auto;
+}
+
+/* Flashcard posicionada absolutamente */
+.flashcard-absolute {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  width: 100%;
+}
+
+/* Navegación entre flashcards */
+.navigation-container {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.navigation-counter {
+  margin: 0 1rem;
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--ion-color-medium);
+}
+
+/* Botones de navegación */
+.nav-button {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  min-width: 44px;
+}
+
+/* Contenedor de placeholder cuando no hay flashcards */
+.placeholder-container {
+  padding: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Grid de botones del menú */
+.menu-botones {
+  margin-top: 2rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Espaciado entre filas de botones */
+.menu-botones ion-row {
+  margin-bottom: 0.5rem;
+}
+
+.menu-botones ion-row:last-child {
+  margin-bottom: 0;
+}
+
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .flashcard-stack {
+    max-width: 90%;
+    min-height: 250px;
+  }
+  
+  .navigation-container {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .navigation-counter {
+    margin: 0 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .menu-botones {
+    max-width: 95%;
+  }
+}
+
+/* Animaciones suaves */
+.flashcard-absolute {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.loading-container ion-spinner {
+  margin-bottom: 0.5rem;
+}
+
+/* Mejoras de accesibilidad */
+.nav-button:focus {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+/* Espaciado para el título */
+ion-toolbar ion-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}

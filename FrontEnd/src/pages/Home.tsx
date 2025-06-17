@@ -1,41 +1,71 @@
 import React, { useState } from 'react';
-import { IonButton, IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import {
+  IonButton,
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonSpinner,
+  IonText,
+  IonIcon,
+  IonCol,
+  IonGrid,
+  IonRow
+} from '@ionic/react';
+import { caretBackOutline, caretForwardOutline } from 'ionicons/icons';
 import './Home.css';
 import Flashcard from '../components/Flashcard';
+import { FlashcardInterface } from '../utils/FlashcardInterface';
 
 const Home: React.FC = () => {
-  
-  const [pregunta, setPregunta] = useState('Pregunta');
-  const [respuesta, setRespuesta] = useState('Respuesta'); 
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [flashcardsBatch, setFlashcardsBatch] = useState<FlashcardInterface[]>([]);
 
-  //LLamar a Ollama y generar la pregunta y respuesta
-  const generarQA = async () => {
-    if(loading){
-      console.log("Generando...")
-    }else{
-      setLoading(true);
-      try {
+  /**
+   * Genera un lote de flashcards llamando a la API de Ollama múltiples veces.
+   */
+  const generarLoteQA = async (numberOfFlashcards: number) => {
+    if (loading) {
+      return;
+    }
+
+    setLoading(true);
+    setFlashcardsBatch([]);
+    setCurrentIndex(0)
+
+    const newFlashcards: FlashcardInterface[] = [];
+
+    try {
+      for (let i = 0; i < numberOfFlashcards; i++) {
         const res = await fetch("http://localhost:3001/api/generate-qa", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({}),
         });
-        
         const data = await res.json();
-        console.log(data)
-        console.log(data.output)
-        console.log(data.output.pregunta)
-        console.log(data.output.respuesta)
-        setPregunta(data.output.pregunta)
-        setRespuesta(data.output.respuesta)
-      } catch (error) {
-        console.error("Error al obtener la respuesta:", error);
-        setRespuesta("Error al generar la pregunta y respuesta.");
+        if (data.output && data.output.pregunta && data.output.respuesta) {
+          newFlashcards.push({ pregunta: data.output.pregunta, respuesta: data.output.respuesta });
+        } else {
+          console.warn("Respuesta inválida de la API para flashcard", i, data);
+        }
       }
+      setFlashcardsBatch(newFlashcards);
+    } catch (error) {
+      console.error("Error al generar el lote de flashcards:", error);
+    } finally {
       setLoading(false);
     }
   };
+
+  function exportarPDF(): void {
+    throw new Error('Function not implemented.');
+  }
+
+  function exportarJSON(): void {
+    throw new Error('Function not implemented.');
+  }
 
   return (
     <IonPage>
@@ -45,21 +75,90 @@ const Home: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Blank</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        
-        <div className="ion-padding ion-text-center">
-          <Flashcard frontText={pregunta} backText={respuesta} />
+        <div className="main-container flashcard-stack">
+          {loading && (
+            <div className="loading-container">
+              <IonSpinner name="lines-small"></IonSpinner>
+              <IonText>Generando...</IonText>
+            </div>
+          )}
+          
+          
+            {flashcardsBatch.length > 0 && (
+              <Flashcard
+                key={currentIndex}
+                pregunta={flashcardsBatch[currentIndex].pregunta}
+                respuesta={flashcardsBatch[currentIndex].respuesta}
+              />
+            )}
+
+          {/* Navegación entre flashcards */}
+          {!loading && flashcardsBatch.length > 0 && (
+            <div className="navigation-container">
+              <IonButton
+                className="nav-button"
+                fill="clear"
+                onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
+                disabled={currentIndex === 0}
+              >
+                <IonIcon icon={caretBackOutline} slot="icon-only" />
+              </IonButton>
+              
+              <span className="navigation-counter">
+                {currentIndex + 1} / {flashcardsBatch.length}
+              </span>
+              
+              <IonButton
+                className="nav-button"
+                fill="clear"
+                onClick={() => setCurrentIndex((prev) => Math.min(prev + 1, flashcardsBatch.length - 1))}
+                disabled={currentIndex === flashcardsBatch.length - 1}
+              >
+                <IonIcon icon={caretForwardOutline} slot="icon-only" />
+              </IonButton>
+            </div>
+          )}
+
+          {!loading && flashcardsBatch.length === 0 && (
+            <div className="placeholder-container">
+              <Flashcard 
+                pregunta='Genera las flashcards con los botones' 
+                respuesta='Genera las flashcards con los botones'
+              />
+            </div>
+          )}
         </div>
-        
-        <div className="ion-padding ion-text-center">
-          <IonButton onClick={generarQA} className="ion-text-center">
-            Presione para generar
-          </IonButton>
-        </div>
+
+        <IonGrid className="ion-padding ion-text-center menu-botones">
+            <IonRow>
+              <IonCol size="12">
+                <IonButton expand="block" onClick={() => generarLoteQA(1)} disabled={loading}>
+                  {loading ? 'Generando...' : 'Generar Flashcard'}
+                </IonButton>
+              </IonCol>
+            </IonRow>
+            <IonRow>
+              <IonCol size="12">
+                <IonButton expand="block" onClick={() => generarLoteQA(5)} disabled={loading}>
+                  {loading ? 'Generando...' : 'Generar Lote de Flashcards'}
+                </IonButton>
+              </IonCol>
+            </IonRow>
+            <IonRow>
+              <IonCol size="12">
+                <IonButton expand="block" onClick={exportarPDF} disabled={loading}>
+                  {loading ? 'Generando...' : 'Exportar a PDF'}
+                </IonButton>
+              </IonCol>
+            </IonRow>
+            <IonRow>
+              <IonCol size="12">
+                <IonButton expand="block" onClick={exportarJSON} disabled={loading}>
+                  {loading ? 'Generando...' : 'Exportar a JSON'}
+                </IonButton>
+              </IonCol>
+            </IonRow>
+          </IonGrid>
       </IonContent>
     </IonPage>
   );

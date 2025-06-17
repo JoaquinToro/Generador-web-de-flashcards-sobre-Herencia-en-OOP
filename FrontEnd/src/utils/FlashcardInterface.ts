@@ -1,4 +1,7 @@
+import { CSSProperties } from "react";
+
 export interface FlashcardInterface {
-  frontText: string;
-  backText: string;
+  pregunta: string;
+  respuesta: string;
+  style?: CSSProperties;
 }
