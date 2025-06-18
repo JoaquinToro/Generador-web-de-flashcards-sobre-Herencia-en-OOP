@@ -14,7 +14,7 @@ import {
   IonRow,
   IonButtons
 } from '@ionic/react';
-import { caretBackOutline, caretForwardOutline, settingsOutline } from 'ionicons/icons';
+import { addCircleOutline, albumsOutline, caretBackOutline, caretForwardOutline, codeWorkingOutline, documentTextOutline, refreshOutline, settingsOutline } from 'ionicons/icons';
 import './Home.css';
 import Flashcard from '../components/Flashcard';
 import SettingsModal from '../components/SettingsModal';
@@ -155,43 +155,79 @@ const Home: React.FC = () => {
         </div>
 
         <IonGrid className="ion-padding ion-text-center menu-botones">
-            <IonRow>
-              <IonCol size="12">
-                <IonButton expand="block" onClick={() => generarLoteQA(1,rol,tema,ejemplo)} disabled={loading}>
-                  {loading ? 'Generando...' : 'Generar Flashcard'}
-                </IonButton>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol size="12">
-                <IonButton expand="block" onClick={() => generarLoteQA(cantidadLote,rol,tema,ejemplo)} disabled={loading}>
-                  {loading ? 'Generando...' : 'Generar Lote de Flashcards'}
-                </IonButton>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol size="12">
-                <IonButton expand="block" onClick={() => generarLoteQA(cantidadLote,rol,tema,ejemplo, "No repitas el contenido anterior")} disabled={loading}>
-                  {loading ? 'Generando...' : 'Regenerar lote actual'}
-                </IonButton>
-              </IonCol>
-            </IonRow>
-            <IonRow></IonRow>
-            <IonRow>
-              <IonCol size="12">
-                <IonButton expand="block" onClick={()=>exportarPDF(flashcardsBatch)} disabled={loading}>
-                  {loading ? 'Generando...' : 'Exportar a PDF'}
-                </IonButton>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol size="12">
-                <IonButton expand="block" onClick={()=>{exportarJSON(flashcardsBatch)}} disabled={loading}>
-                  {loading ? 'Generando...' : 'Exportar a JSON'}
-                </IonButton>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
+          <IonRow>
+            <IonCol size="12">
+              <IonButton
+                expand="block"
+                color="primary"
+                onClick={() => generarLoteQA(1, rol, tema, ejemplo)}
+                disabled={loading}
+              >
+                <IonIcon icon={addCircleOutline} slot="start" />
+                {loading ? 'Generando...' : 'Generar Flashcard'}
+              </IonButton>
+            </IonCol>
+          </IonRow>
+
+          <IonRow>
+            <IonCol size="12">
+              <IonButton
+                expand="block"
+                color="primary"
+                onClick={() => generarLoteQA(cantidadLote, rol, tema, ejemplo)}
+                disabled={loading}
+              >
+                <IonIcon icon={albumsOutline} slot="start" />
+                {loading ? 'Generando...' : 'Generar Lote de Flashcards'}
+              </IonButton>
+            </IonCol>
+          </IonRow>
+
+          <IonRow>
+            <IonCol size="12">
+              <IonButton
+                expand="block"
+                color="secondary"
+                onClick={() =>
+                  generarLoteQA(cantidadLote, rol, tema, ejemplo, "No repitas el contenido anterior")
+                }
+                disabled={loading}
+              >
+                <IonIcon icon={refreshOutline} slot="start" />
+                {loading ? 'Generando...' : 'Regenerar lote actual'}
+              </IonButton>
+            </IonCol>
+          </IonRow>
+
+          <IonRow>
+            <IonCol size="12">
+              <IonButton
+                expand="block"
+                color="danger"
+                onClick={() => exportarPDF(flashcardsBatch)}
+                disabled={loading}
+              >
+                <IonIcon icon={documentTextOutline} slot="start" />
+                {loading ? 'Generando...' : 'Exportar a PDF'}
+              </IonButton>
+            </IonCol>
+          </IonRow>
+
+          <IonRow>
+            <IonCol size="12">
+              <IonButton
+                expand="block"
+                color="danger"
+                onClick={() => exportarJSON(flashcardsBatch)}
+                disabled={loading}
+              >
+                <IonIcon icon={codeWorkingOutline} slot="start" />
+                {loading ? 'Generando...' : 'Exportar a JSON'}
+              </IonButton>
+            </IonCol>
+          </IonRow>
+        </IonGrid>
+
       </IonContent>
     </IonPage>
   );
