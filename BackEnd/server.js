@@ -7,7 +7,7 @@ app.use(cors());
 
 const PORT = process.env.PORT || 3001;
 const OLLAMA_API_URL = process.env.OLLAMA_API_URL || "http://localhost:11434/api/generate";
-const MODEL_NAME = "FlashcardsJavaHerenciaGPT";
+const MODEL_NAME = "JqnFhtagn/FlashcardsJavaHerenciaGPT";
 const TEMAS = [
     // --- 1. Conceptos Fundamentales y Teoría ---
     "qué es la herencia (relación 'es-un')",
