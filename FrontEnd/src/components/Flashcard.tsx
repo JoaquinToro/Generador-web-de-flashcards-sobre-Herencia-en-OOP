@@ -15,7 +15,11 @@ const Flashcard: React.FC<FlashcardInterface> = ({ pregunta, respuesta, explicac
     >
       <div className="flashcard-inner">
         <IonCard className="flashcard-front">
-          <IonCardContent>{pregunta}</IonCardContent>
+          <IonCardContent>
+            <div className="flashcard-content-scroll">
+              <div className="flashcard-content-inner">{pregunta}</div>
+            </div>
+          </IonCardContent>
         </IonCard>
 
         <IonCard className="flashcard-back">
@@ -33,7 +37,11 @@ const Flashcard: React.FC<FlashcardInterface> = ({ pregunta, respuesta, explicac
               </IonButton>
             </div>
           )}
-          <IonCardContent>{respuesta}</IonCardContent>
+          <IonCardContent>
+            <div className="flashcard-content-scroll">
+              <div className="flashcard-content-inner">{respuesta}</div>
+            </div>
+          </IonCardContent>
         </IonCard>
       </div>
 

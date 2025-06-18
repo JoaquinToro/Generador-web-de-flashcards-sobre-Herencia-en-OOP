@@ -95,7 +95,7 @@ function shuffleArray(array) {
 }
 
 
-async function generarFlashcardUnica(rol, tipo, ejemplo, tarea, dificultad, historialPreguntas) {
+async function generarFlashcardUnica(rol, tipo, ejemplo, extra, tarea, dificultad, historialPreguntas) {
     const historialString = historialPreguntas.size > 0
         ? `Por favor, asegúrate de que la pregunta no sea similar a ninguna de las siguientes: ${[...historialPreguntas].join(', ')}`
         : "";
@@ -144,6 +144,8 @@ async function generarFlashcardUnica(rol, tipo, ejemplo, tarea, dificultad, hist
                     **3. Historial de flashcards recientes (para no repetir):**
                     ${historialString}
 
+                    ${extra}
+
                     **Ahora, genera el objeto JSON de la flashcard.**
                     `;
 
@@ -181,6 +183,7 @@ app.post("/api/flashcards", async (req, res) => {
     const rol = req.body.rol || 'System: Eres un mentor de programación ingenioso y un experto en Java. Tu misión es crear flashcards que no solo sean correctas, sino también memorables usando analogías y ejemplos prácticos.'
     const tipo = req.body.tipo || 'Mantén un balance entre conceptos teóricos y ejercicios prácticos de programación'
     const ejemplo = req.body.ejemplo || ''
+    const extra = req.body.extra || ''
     console.log(`[Request] Petición para generar un lote de ${count} flashcard(s).`);
 
     const nuevasFlashcards = [];
@@ -213,7 +216,7 @@ app.post("/api/flashcards", async (req, res) => {
                  if (intentosTotales >= MAX_INTENTOS_TOTALES) break;
                  
                  try {
-                     const flashcard = await generarFlashcardUnica(rol, tipo, ejemplo,tarea.tema, tarea.dificultad, preguntasDelLoteActual);
+                     const flashcard = await generarFlashcardUnica(rol, tipo, ejemplo, extra, tarea.tema, tarea.dificultad, preguntasDelLoteActual);
 
                      if (!preguntasDelLoteActual.has(flashcard.pregunta)) {
                          preguntasDelLoteActual.add(flashcard.pregunta);

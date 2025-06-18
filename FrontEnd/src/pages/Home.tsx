@@ -34,7 +34,7 @@ const Home: React.FC = () => {
   /**
    * Genera un lote de flashcards llamando a la API de Ollama múltiples veces.
    */
-  const generarLoteQA = async (numberOfFlashcards: number, rol:string, tema:string, ejemplo:string) => {
+  const generarLoteQA = async (numberOfFlashcards: number, rol:string, tema:string, ejemplo:string, extra?:string) => {
     if (loading) return;
 
     setLoading(true);
@@ -49,7 +49,8 @@ const Home: React.FC = () => {
           count: numberOfFlashcards,
           rol: rol,
           tipo: tema,
-          ejemplo: ejemplo
+          ejemplo: ejemplo,
+          extra:extra
         }),
       });
 
@@ -168,6 +169,14 @@ const Home: React.FC = () => {
                 </IonButton>
               </IonCol>
             </IonRow>
+            <IonRow>
+              <IonCol size="12">
+                <IonButton expand="block" onClick={() => generarLoteQA(cantidadLote,rol,tema,ejemplo, "No repitas el contenido anterior")} disabled={loading}>
+                  {loading ? 'Generando...' : 'Regenerar lote actual'}
+                </IonButton>
+              </IonCol>
+            </IonRow>
+            <IonRow></IonRow>
             <IonRow>
               <IonCol size="12">
                 <IonButton expand="block" onClick={()=>exportarPDF(flashcardsBatch)} disabled={loading}>

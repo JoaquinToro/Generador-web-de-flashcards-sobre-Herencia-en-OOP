@@ -26,12 +26,19 @@
 
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* importante para que el scroll empiece arriba */
+
   padding: 16px;
   box-sizing: border-box;
   text-align: center;
 
   overflow-y: auto;
+  overflow-x: hidden;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .flashcard-front::-webkit-scrollbar,
@@ -54,25 +61,39 @@
   background-color: #f8f8f8;
   transform: rotateY(180deg);
 }
+
 .flashcard-back {
   position: relative;
 }
 
-/* Contenedor para posicionar el botón de información */
-.info-button-container {
-  position: absolute;
-  top: 4px; /* Pequeño margen desde la parte superior */
-  right: 4px; /* Pequeño margen desde la derecha */
-  z-index: 10; /* Asegura que esté por encima del contenido de la tarjeta */
+.flashcard-content-scroll {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100%;
+  width: 100%;
+  padding: 0 8px;
+  box-sizing: border-box;
 }
 
-/* Estilo para el botón en sí */
+.flashcard-content-inner {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.info-button-container {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 10;
+}
+
 .info-button-container ion-button {
   --padding-start: 6px;
   --padding-end: 6px;
-  --color: var(--ion-color-medium-shade); /* Un color sutil */
+  --color: var(--ion-color-medium-shade);
 }
 
 .info-button-container ion-button:hover {
-  --color: var(--ion-color-primary); /* Cambia a color primario al pasar el ratón */
+  --color: var(--ion-color-primary);
 }
