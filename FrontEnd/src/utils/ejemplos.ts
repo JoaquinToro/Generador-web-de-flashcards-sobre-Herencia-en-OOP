@@ -1,9 +1,7 @@
 export const PERSONALIDADES = {
   TUTOR_CREATIVO: `System: Eres un mentor de programación ingenioso y un experto en Java. Tu misión es crear flashcards que no solo sean correctas, sino también memorables usando analogías y ejemplos prácticos.`,
   PROFESOR_SERIO: `System: Eres un catedrático universitario de Ciencias de la Computación especializado en Java. Tu objetivo es la precisión técnica y la rigurosidad académica. Genera flashcards formales y detalladas en formato JSON.`,
-  WIZARD_DIVERTIDO: `System: Eres el "Java Wizard", un mago que crea desafíos y acertijos sobre programación en Java. Formula flashcards como si fueran pequeños puzzles o misiones divertidas.`,
-  INGENIERO_SENIOR: `System: Eres un Ingeniero de Software Senior con 15 años de experiencia. Enfócate en la aplicación práctica, el rendimiento y los errores comunes en entornos de producción. Sé directo y preciso.`
-};
+  };
 
 export const TIPOS_DE_CONTENIDO = {
   MIXTO: `Tu enfoque debe mantener un balance saludable entre la teoría y la práctica. Alterna entre preguntas conceptuales y ejercicios de código para una experiencia completa.`,
@@ -32,26 +30,6 @@ Ejemplo de Salida Deseada:
   "dificultad": "básico"
 }`
     },
-    [PERSONALIDADES.INGENIERO_SENIOR]: {
-        [TIPOS_DE_CONTENIDO.CONCEPTOS_TEORICOS]: `
-Ejemplo de Salida Deseada:
-{
-  "pregunta": "¿Cuál es el 'code smell' o riesgo de mantenibilidad asociado a una jerarquía de herencia excesivamente profunda (ej. 6+ niveles)?",
-  "respuesta": "El riesgo principal es el 'acoplamiento frágil' o 'fragile base class problem'.",
-  "explicacion": "Un cambio en una superclase de alto nivel puede tener efectos impredecibles y romper subclases lejanas, haciendo el refactoring peligroso. En entornos profesionales, a menudo se prefiere la composición sobre la herencia para evitar este problema de acoplamiento fuerte.",
-  "tema": "desventajas de la herencia (acoplamiento fuerte)",
-  "dificultad": "avanzado"
-}`,
-        [TIPOS_DE_CONTENIDO.EJERCICIOS_PRACTICOS]: `
-Ejemplo de Salida Deseada:
-{
-  "pregunta": "Este código es propenso a 'ClassCastException' y usa un patrón obsoleto. ¿Cómo se reescribe de forma segura y idiomática en Java 16+?\\n\\nObject obj = new Gato();\\nif (obj instanceof Perro) {\\n  Perro p = (Perro) obj;\\n  p.ladrar();\\n}",
-  "respuesta": "if (obj instanceof Perro p) {\\n  p.ladrar();\\n}",
-  "explicacion": "Se usa 'Pattern Matching for instanceof' (JEP 394). Esto elimina la necesidad del casting explícito y la variable 'p' solo existe dentro del scope del 'if', previniendo la ClassCastException de forma segura y mejorando la legibilidad del código.",
-  "tema": "Pattern Matching para instanceof (Java 16+)",
-  "dificultad": "intermedio"
-}`
-    },
     [PERSONALIDADES.PROFESOR_SERIO]: {
         [TIPOS_DE_CONTENIDO.CONCEPTOS_TEORICOS]: `
 Ejemplo de Salida Deseada:
@@ -72,24 +50,4 @@ Ejemplo de Salida Deseada:
   "dificultad": "avanzado"
 }`
     },
-    [PERSONALIDADES.WIZARD_DIVERTIDO]: {
-        [TIPOS_DE_CONTENIDO.CONCEPTOS_TEORICOS]: `
-Ejemplo de Salida Deseada:
-{
-  "pregunta": "Un hechicero quiere que su Grifo sea 'Volador' y 'Acuático', pero la magia antigua prohíbe tener más de un padre (herencia). ¿Qué artefacto arcano de Java le permite adquirir múltiples conjuntos de habilidades?",
-  "respuesta": "Debe usar los 'Pactos de Interfaz', es decir, implementar interfaces ('implements').",
-  "explicacion": "Un Grifo puede heredar su linaje de un solo padre ('extends Animal'), pero puede firmar múltiples pactos ('implements Volador, Acuatico'), prometiendo así manifestar todas las habilidades (métodos) que dichos pactos requieren.",
-  "tema": "herencia múltiple de tipo (interfaces)",
-  "dificultad": "intermedio"
-}`,
-        [TIPOS_DE_CONTENIDO.EJERCICIOS_PRACTICOS]: `
-Ejemplo de Salida Deseada:
-{
-  "pregunta": "Un Mago Oscuro disfrazó a sus esbirros. El siguiente encantamiento invoca 'atacar()' en su horda. ¿Cuál será la manifestación exacta en la consola?\\n\\n'abstract class Monstruo { abstract void atacar(); }'\\n'class Orco extends Monstruo { void atacar() { System.out.println(\\"¡GARRAZO!\\"); } }'\\n'class Goblin extends Monstruo { void atacar() { System.out.println(\\"¡PINCHAZO!\\"); } }'\\n\\nMonstruo[] horda = {new Goblin(), new Orco()};\\nfor(Monstruo m : horda) { m.atacar(); }",
-  "respuesta": "La salida en la consola será:\\n¡PINCHAZO!\\n¡GARRAZO!",
-  "explicacion": "¡Este es el poder arcano del Polimorfismo! En tiempo de ejecución, Java no mira el tipo de la referencia ('Monstruo'), sino la verdadera naturaleza del objeto en memoria ('Goblin', 'Orco') para invocar el hechizo ('método') correcto.",
-  "tema": "polimorfismo en tiempo de ejecución",
-  "dificultad": "básico"
-}`
-    }
 };

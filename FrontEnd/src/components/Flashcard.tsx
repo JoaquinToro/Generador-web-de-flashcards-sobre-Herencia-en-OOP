@@ -4,7 +4,7 @@ import { informationCircleOutline } from 'ionicons/icons';
 import { FlashcardInterface } from '../utils/FlashcardInterface';
 import './Flashcard.css';
 
-const Flashcard: React.FC<FlashcardInterface> = ({ pregunta, respuesta, explicacion, style }) => {
+const Flashcard: React.FC<FlashcardInterface> = ({ pregunta, respuesta, explicacion }) => {
   const [flipped, setFlipped] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
@@ -12,7 +12,6 @@ const Flashcard: React.FC<FlashcardInterface> = ({ pregunta, respuesta, explicac
     <div
       className={`flashcard-container ${flipped ? 'flipped' : ''}`}
       onClick={() => setFlipped(!flipped)}
-      style={style}
     >
       <div className="flashcard-inner">
         <IonCard className="flashcard-front">

@@ -54,8 +54,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             <IonSelect value={rol} placeholder="Seleccionar Estilo de Flashcards" onIonChange={e => setRol(e.detail.value)}>
               <IonSelectOption value={PERSONALIDADES.TUTOR_CREATIVO}>Tutor Creativo</IonSelectOption>
               <IonSelectOption value={PERSONALIDADES.PROFESOR_SERIO}>Profesor Serio</IonSelectOption>
-              <IonSelectOption value={PERSONALIDADES.WIZARD_DIVERTIDO}>Wizard Divertido</IonSelectOption>
-              <IonSelectOption value={PERSONALIDADES.INGENIERO_SENIOR}>Ingeniero Senior</IonSelectOption>
             </IonSelect>
           </IonItem>
           <IonItem>
