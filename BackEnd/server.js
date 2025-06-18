@@ -100,15 +100,52 @@ async function generarFlashcardUnica(rol, tipo, ejemplo, tarea, dificultad, hist
         ? `Por favor, asegúrate de que la pregunta no sea similar a ninguna de las siguientes: ${[...historialPreguntas].join(', ')}`
         : "";
 
-    const prompt = `${rol} ${tipo} Tu única salida debe ser un objeto JSON válido y nada más.\nSigue el siguiente ejemplo para generar la flashcard\n${ejemplo}
+    const prompt = `
+                    ${rol}
+                    ${tipo}
 
-                    User: Genera una flashcard de acuerdo a tu rol sobre herencia en Java.
-                    - Concepto específico: "${tarea}"
-                    - Dificultad: "${dificultad}"
-                    - El formato JSON debe contener estrictamente las claves "pregunta", "respuesta", "tema" y "dificultad".
+                    ### REGLAS DE ORO ###
+                    1. Tu única salida debe ser un objeto JSON válido y nada más. Sin texto introductorio, sin disculpas, solo el JSON.
+                    2. Sigue el ejemplo de formato y tono proporcionado para generar la flashcard.
+                    3. Presta especial atención a la guía de contenido para cada campo JSON.
+
+                    ### EJEMPLO DE FORMATO Y TONO ###
+                    ${ejemplo}
+
+                    // --- COMIENZA LA PETICIÓN DETALLADA ---
+
+                    ### TAREA: GENERAR UNA FLASHCARD DE JAVA ###
+
+                    **1. Guía de contenido para cada campo del JSON:**
+
+                    * **"pregunta"**:
+                        * **Para un concepto:** Debe ser una pregunta clara, directa y que invite a la reflexión. Ejemplo: "¿Qué es la sobrecarga de métodos y en qué se diferencia de la sobrescritura?".
+                        * **Para un ejercicio práctico:** Debe contener **dos partes claras**:
+                            1.  Un **Enunciado** conciso que describa el problema a resolver.
+                            2.  Un bloque de **Código a completar**, presentando el contexto y un comentario como \`// Tu código aquí\` para guiar al estudiante.
+
+                    * **"respuesta"**:
+                        * **Para un concepto:** La respuesta directa y precisa a la pregunta.
+                        * **Para un ejercicio práctico:** Debe contener **únicamente el código final y correcto** que soluciona el problema planteado en la pregunta. ¡Sin explicaciones aquí! Solo el código.
+
+                    * **"explicacion"**:
+                        * **Para un concepto:** Una analogía, un caso de uso o un "pro-tip" que ayude a memorizar y entender profundamente la respuesta.
+                        * **Para un ejercicio práctico:** Aquí es donde brillas como mentor. Explica el *porqué* de la solución. Menciona los conceptos clave de Java aplicados (ej. "Se usa la palabra clave 'extends' para heredar de la clase Animal...") y resalta las buenas prácticas (ej. "La anotación '@Override' es crucial para asegurar que estamos sobrescribiendo correctamente y no creando un método nuevo por error.").
+
+                    * **"tema"**: El concepto general de Java que se está evaluando (ej. "Herencia", "Polimorfismo", "Interfaces").
+
+                    * **"dificultad"**: El nivel de dificultad que se te ha asignado.
+
+                    **2. Petición Específica:**
+
+                    * **Concepto a tratar:** "${tarea}"
+                    * **Nivel de dificultad:** "${dificultad}"
+
+                    **3. Historial de flashcards recientes (para no repetir):**
                     ${historialString}
 
-                    Tu turno:`;
+                    **Ahora, genera el objeto JSON de la flashcard.**
+                    `;
 
     console.log(prompt)
 
@@ -120,8 +157,8 @@ async function generarFlashcardUnica(rol, tipo, ejemplo, tarea, dificultad, hist
             prompt: prompt,
             stream: false,
             options: {
-                temperature: 0.9,
-                top_p: 0.9,
+                temperature: 0.5,
+                top_p: 1.5,
                 repetition_penalty: 1.2
             }
         }),

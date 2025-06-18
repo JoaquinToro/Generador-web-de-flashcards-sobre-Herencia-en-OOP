@@ -24,7 +24,7 @@ import { exportarJSON, exportarPDF } from '../utils/exports';
 const Home: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [rol, setRol] = useState('un mentor de programación ingenioso');
+  const [rol, setRol] = useState('System: Eres un mentor de programación ingenioso y un experto en Java. Tu misión es crear flashcards que no solo sean correctas, sino también memorables usando analogías y ejemplos prácticos.');
   const [tema, setTema] = useState('');
   const [ejemplo, setEjemplo] = useState('');
   const [cantidadLote, setCantidadLote] = useState(5);
@@ -112,6 +112,7 @@ const Home: React.FC = () => {
                 key={currentIndex}
                 pregunta={flashcardsBatch[currentIndex].pregunta}
                 respuesta={flashcardsBatch[currentIndex].respuesta}
+                explicacion={flashcardsBatch[currentIndex].explicacion}
               />
             )}
 

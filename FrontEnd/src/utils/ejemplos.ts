@@ -12,76 +12,84 @@ export const TIPOS_DE_CONTENIDO = {
 };
 
 export const EJEMPLOS_GUIADOS = {
-  [PERSONALIDADES.TUTOR_CREATIVO]: {
-    [TIPOS_DE_CONTENIDO.CONCEPTOS_TEORICOS]: `
+    [PERSONALIDADES.TUTOR_CREATIVO]: {
+        [TIPOS_DE_CONTENIDO.CONCEPTOS_TEORICOS]: `
 Ejemplo de Salida Deseada:
 {
   "pregunta": "Si la herencia es como una receta familiar, ¿qué significa sobrescribir un método usando '@Override'?",
-  "respuesta": "Significa que tomas la receta base de la abuela (el método de la superclase), pero le añades tu propio toque secreto. La anotación '@Override' es como poner una nota adhesiva que dice 'Ojo, esta es mi versión mejorada', asegurando que no te equivocaste al copiar el nombre de la receta original.",
+  "respuesta": "Significa que tomas la receta base de la superclase pero implementas tu propia versión en la subclase.",
+  "explicacion": "Imagina que la receta de la abuela es el método original. Al usar '@Override', creas tu propia versión (¡quizás con más chocolate!). La anotación es como una nota adhesiva que dice 'Ojo, esta es mi versión mejorada', y ayuda a evitar errores si escribes mal el nombre de la receta.",
   "tema": "sobrescritura de métodos (@Override)",
   "dificultad": "intermedio"
 }`,
-    [TIPOS_DE_CONTENIDO.EJERCICIOS_PRACTICOS]: `
+        [TIPOS_DE_CONTENIDO.EJERCICIOS_PRACTICOS]: `
 Ejemplo de Salida Deseada:
 {
-  "pregunta": "Nuestro 'Coche' hereda de 'Vehiculo', pero al llamar a 'coche.acelerar()', no hace nada. ¿Qué hechizo falta en el método 'acelerar' de Coche para que use la magia de su padre Vehiculo?\\n\\nclass Vehiculo { public void acelerar() { setVelocidad(getVelocidad() + 10); } }\\nclass Coche extends Vehiculo { public void acelerar() { /* ¿Qué va aquí? */ } }",
-  "respuesta": "Falta la invocación al poder ancestral: ¡super.acelerar()! Para reutilizar la lógica de la superclase dentro de un método sobrescrito, debes llamar explícitamente a 'super.metodo()'.",
-  "tema": "la palabra clave 'super' para invocar métodos",
+  "pregunta": "Nuestro 'Coche' necesita usar el acelerador de su padre 'Vehiculo'. ¿Qué palabra clave falta para invocar el método de la superclase?\\n\\nclass Vehiculo { public void acelerar() { velocidad += 10; } }\\nclass Coche extends Vehiculo { public void acelerar() { /* ¿Qué va aquí para llamar al acelerador del Vehiculo? */ } }",
+  "respuesta": "super.acelerar();",
+  "explicacion": "¡Exacto! La palabra clave 'super' es como un 'walkie-talkie' para hablar con tu clase padre. Con 'super.acelerar()' le pides explícitamente a la clase 'Vehiculo' que ejecute su lógica de aceleración.",
+  "tema": "invocación de métodos de la superclase con 'super'",
   "dificultad": "básico"
 }`
-  },
-  [PERSONALIDADES.INGENIERO_SENIOR]: {
-    [TIPOS_DE_CONTENIDO.CONCEPTOS_TEORICOS]: `
+    },
+    [PERSONALIDADES.INGENIERO_SENIOR]: {
+        [TIPOS_DE_CONTENIDO.CONCEPTOS_TEORICOS]: `
 Ejemplo de Salida Deseada:
 {
-  "pregunta": "En términos de diseño de API y mantenibilidad, ¿cuál es el 'code smell' o riesgo asociado a una jerarquía de herencia excesivamente profunda (ej. 6 niveles o más)?",
-  "respuesta": "El riesgo principal es el 'acoplamiento frágil' (fragile base class problem). Un cambio en una superclase de alto nivel puede tener efectos impredecibles y romper subclases muy lejanas en la jerarquía, haciendo el refactoring peligroso y costoso. Se prefiere la composición para evitar este problema.",
+  "pregunta": "¿Cuál es el 'code smell' o riesgo de mantenibilidad asociado a una jerarquía de herencia excesivamente profunda (ej. 6+ niveles)?",
+  "respuesta": "El riesgo principal es el 'acoplamiento frágil' o 'fragile base class problem'.",
+  "explicacion": "Un cambio en una superclase de alto nivel puede tener efectos impredecibles y romper subclases lejanas, haciendo el refactoring peligroso. En entornos profesionales, a menudo se prefiere la composición sobre la herencia para evitar este problema de acoplamiento fuerte.",
   "tema": "desventajas de la herencia (acoplamiento fuerte)",
   "dificultad": "avanzado"
 }`,
-    [TIPOS_DE_CONTENIDO.EJERCICIOS_PRACTICOS]: `
+        [TIPOS_DE_CONTENIDO.EJERCICIOS_PRACTICOS]: `
 Ejemplo de Salida Deseada:
 {
-  "pregunta": "Este código lanza una 'ClassCastException'. ¿Cuál es la forma idiomática y segura en Java (16+) de reescribirlo para evitar la excepción y mejorar la legibilidad?\\n\\nObject obj = new Gato();\\nif (obj instanceof Perro) {\\n  Perro p = (Perro) obj; // Lanza ClassCastException\\n  p.ladrar();\\n}",
-  "respuesta": "Usando 'Pattern Matching for instanceof' (JEP 394), se reescribe como: 'if (obj instanceof Perro p) { p.ladrar(); }'. El casting es implícito y la variable 'p' solo existe dentro del scope del if, previniendo la ClassCastException de forma segura y concisa.",
+  "pregunta": "Este código es propenso a 'ClassCastException' y usa un patrón obsoleto. ¿Cómo se reescribe de forma segura y idiomática en Java 16+?\\n\\nObject obj = new Gato();\\nif (obj instanceof Perro) {\\n  Perro p = (Perro) obj;\\n  p.ladrar();\\n}",
+  "respuesta": "if (obj instanceof Perro p) {\\n  p.ladrar();\\n}",
+  "explicacion": "Se usa 'Pattern Matching for instanceof' (JEP 394). Esto elimina la necesidad del casting explícito y la variable 'p' solo existe dentro del scope del 'if', previniendo la ClassCastException de forma segura y mejorando la legibilidad del código.",
   "tema": "Pattern Matching para instanceof (Java 16+)",
   "dificultad": "intermedio"
 }`
-  },
-  [PERSONALIDADES.PROFESOR_SERIO]: {
-    [TIPOS_DE_CONTENIDO.CONCEPTOS_TEORICOS]: `
+    },
+    [PERSONALIDADES.PROFESOR_SERIO]: {
+        [TIPOS_DE_CONTENIDO.CONCEPTOS_TEORICOS]: `
 Ejemplo de Salida Deseada:
 {
-  "pregunta": "Al sobrescribir un método en una subclase, ¿qué restricción fundamental se aplica al modificador de acceso del método sobrescrito en comparación con el de la superclase?",
-  "respuesta": "El modificador de acceso del método en la subclase no puede ser más restrictivo que el del método en la superclase; debe ser igual o más permisivo. Por ejemplo, 'protected' puede ser sobrescrito como 'public', pero no como 'private'.",
+  "pregunta": "Al sobrescribir un método en una subclase, ¿qué restricción fundamental se aplica al modificador de acceso del método en la subclase?",
+  "respuesta": "El modificador de acceso del método en la subclase no puede ser más restrictivo que el del método en la superclase.",
+  "explicacion": "Debe ser igual o más permisivo. Por ejemplo, un método 'protected' puede ser sobrescrito como 'protected' o 'public', pero nunca como 'private' o 'default' (package-private).",
   "tema": "reglas para la sobrescritura de métodos",
   "dificultad": "intermedio"
 }`,
-    [TIPOS_DE_CONTENIDO.EJERCICIOS_PRACTICOS]: `
+        [TIPOS_DE_CONTENIDO.EJERCICIOS_PRACTICOS]: `
 Ejemplo de Salida Deseada:
 {
-  "pregunta": "Dado el siguiente código, explique por qué se produce un error de compilación y cómo se corregiría de acuerdo a las reglas de inicialización de la herencia en Java.\\n\\nclass SuperClase { public SuperClase(String s) {} }\\nclass SubClase extends SuperClase { public SubClase() { System.out.println(\\"Hola\\"); } }",
-  "respuesta": "El error ocurre porque el constructor de 'SubClase' intenta invocar implícitamente al constructor sin argumentos 'super()', el cual no existe en 'SuperClase'. La corrección exige una llamada explícita a un constructor existente, como 'super(\\"valor\\");', como primera línea del constructor de la subclase.",
-  "tema": "herencia y el orden de ejecución de constructores",
+  "pregunta": "Analice el siguiente código. ¿Por qué produce un error de compilación y cuál es la corrección precisa?\\n\\nclass SuperClase { public SuperClase(String s) {} }\\nclass SubClase extends SuperClase { public SubClase() {} }",
+  "respuesta": "La corrección es añadir 'super(\\"algún_valor\\");' como primera línea en el constructor de 'SubClase'.",
+  "explicacion": "El error de compilación ocurre porque el constructor de la subclase intenta invocar implícitamente al constructor por defecto 'super()', el cual no existe en 'SuperClase' (ya que se definió uno con argumentos). La regla es que si la superclase no tiene un constructor sin argumentos, la subclase debe invocar explícitamente a uno de los constructores existentes.",
+  "tema": "herencia y la cadena de constructores",
   "dificultad": "avanzado"
 }`
-  },
-  [PERSONALIDADES.WIZARD_DIVERTIDO]: {
-    [TIPOS_DE_CONTENIDO.CONCEPTOS_TEORICOS]: `
+    },
+    [PERSONALIDADES.WIZARD_DIVERTIDO]: {
+        [TIPOS_DE_CONTENIDO.CONCEPTOS_TEORICOS]: `
 Ejemplo de Salida Deseada:
 {
-  "pregunta": "Un hechicero Java quiere que su Grifo sea 'Volador' y 'Nadador' a la vez, pero la magia antigua prohíbe tener más de un padre (herencia múltiple). ¿Qué artefacto arcano le permite adquirir múltiples habilidades?",
-  "respuesta": "Debe usar los 'Pactos de Interfaz' ('implements'). Un hechicero puede heredar su linaje de un solo padre ('extends'), pero puede firmar múltiples pactos ('implements Volador, Nadador'), prometiendo manifestar todas las habilidades (métodos) de dichas interfaces.",
-  "tema": "herencia múltiple de tipo (implementando interfaces)",
+  "pregunta": "Un hechicero quiere que su Grifo sea 'Volador' y 'Acuático', pero la magia antigua prohíbe tener más de un padre (herencia). ¿Qué artefacto arcano de Java le permite adquirir múltiples conjuntos de habilidades?",
+  "respuesta": "Debe usar los 'Pactos de Interfaz', es decir, implementar interfaces ('implements').",
+  "explicacion": "Un Grifo puede heredar su linaje de un solo padre ('extends Animal'), pero puede firmar múltiples pactos ('implements Volador, Acuatico'), prometiendo así manifestar todas las habilidades (métodos) que dichos pactos requieren.",
+  "tema": "herencia múltiple de tipo (interfaces)",
   "dificultad": "intermedio"
 }`,
-    [TIPOS_DE_CONTENIDO.EJERCICIOS_PRACTICOS]: `
+        [TIPOS_DE_CONTENIDO.EJERCICIOS_PRACTICOS]: `
 Ejemplo de Salida Deseada:
 {
-  "pregunta": "Un Mago Oscuro disfrazó a sus esbirros. El siguiente encantamiento invoca 'atacar()' en su horda. ¿Cuál es el conjuro exacto que se manifestará?\\n\\n'abstract class Monstruo { abstract void atacar(); }'\\n'class Orco extends Monstruo { void atacar() { System.out.println(\\"¡GARRAZO!\\"); } }'\\n'class Goblin extends Monstruo { void atacar() { System.out.println(\\"¡PINCHAZO!\\"); } }'\\n\\nMonstruo[] horda = {new Goblin(), new Orco()};\\nfor(Monstruo m : horda) { m.atacar(); }",
-  "respuesta": "El oráculo de la consola revelará la verdadera naturaleza de cada monstruo: ¡PINCHAZO! y luego ¡GARRAZO! Este es el poder del Polimorfismo, que invoca el hechizo de la criatura real, no el del tipo de referencia.",
-  "tema": "polimorfismo en tiempo de ejecución con herencia",
+  "pregunta": "Un Mago Oscuro disfrazó a sus esbirros. El siguiente encantamiento invoca 'atacar()' en su horda. ¿Cuál será la manifestación exacta en la consola?\\n\\n'abstract class Monstruo { abstract void atacar(); }'\\n'class Orco extends Monstruo { void atacar() { System.out.println(\\"¡GARRAZO!\\"); } }'\\n'class Goblin extends Monstruo { void atacar() { System.out.println(\\"¡PINCHAZO!\\"); } }'\\n\\nMonstruo[] horda = {new Goblin(), new Orco()};\\nfor(Monstruo m : horda) { m.atacar(); }",
+  "respuesta": "La salida en la consola será:\\n¡PINCHAZO!\\n¡GARRAZO!",
+  "explicacion": "¡Este es el poder arcano del Polimorfismo! En tiempo de ejecución, Java no mira el tipo de la referencia ('Monstruo'), sino la verdadera naturaleza del objeto en memoria ('Goblin', 'Orco') para invocar el hechizo ('método') correcto.",
+  "tema": "polimorfismo en tiempo de ejecución",
   "dificultad": "básico"
 }`
-  }
+    }
 };

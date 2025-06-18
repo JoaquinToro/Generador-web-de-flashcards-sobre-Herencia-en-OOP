@@ -54,3 +54,25 @@
   background-color: #f8f8f8;
   transform: rotateY(180deg);
 }
+.flashcard-back {
+  position: relative;
+}
+
+/* Contenedor para posicionar el botón de información */
+.info-button-container {
+  position: absolute;
+  top: 4px; /* Pequeño margen desde la parte superior */
+  right: 4px; /* Pequeño margen desde la derecha */
+  z-index: 10; /* Asegura que esté por encima del contenido de la tarjeta */
+}
+
+/* Estilo para el botón en sí */
+.info-button-container ion-button {
+  --padding-start: 6px;
+  --padding-end: 6px;
+  --color: var(--ion-color-medium-shade); /* Un color sutil */
+}
+
+.info-button-container ion-button:hover {
+  --color: var(--ion-color-primary); /* Cambia a color primario al pasar el ratón */
+}

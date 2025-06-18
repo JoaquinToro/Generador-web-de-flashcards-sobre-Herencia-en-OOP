@@ -6,4 +6,5 @@ export interface FlashcardInterface {
   tema?: string;
   dificultad?: string;
   style?: CSSProperties;
+  explicacion?: string;
 }
